@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Service Monitoring</title>
+        <script type="text/javascript">
+
+            let addURL = "http://calc-add.40174730.qpc.hal.davecutting.uk/";
+            let subURL = "http://calc-subtract.40174730.qpc.hal.davecutting.uk/";
+            let multURL = "http://py-mult.40174730.qpc.hal.davecutting.uk/";
+            let divURL = "http://go-div.40174730.qpc.hal.davecutting.uk/";
+            let sqrtURL = "http://java-sqrt.40174730.qpc.hal.davecutting.uk/";
+            let caretURL = "http://c-caret.40174730.qpc.hal.davecutting.uk/";
+            let modURL = "https://yb5syo1b3i.execute-api.us-east-1.amazonaws.com/default/modu";
+            let frontendURL = "http://calc-frontend.40174730.qpc.hal.davecutting.uk/";
+
+            let value = -1;
+
+            const PORT = 80;
+            const HOST = '0.0.0.0';
+
+            checkService("add");
+            checkService("sub");
+            checkService("mult");
+            checkService("div");
+            checkService("sqrt");
+            checkService("caret");
+            checkService("mod");
+            checkFrontEnd();
+            printDB();
+
+
+            function checkService(page) 
+            {
+                let URL = "";
+                let answer = -1;
+                let x = 6;
+                let y = 2;
+                if (page == "add"){
+                    URL = addURL;
+                    answer = x+y;
+                }
+                if (page == "sub"){
+                    URL = subURL;
+                    answer = x-y;
+                }
+                if (page == "mult"){
+                    URL = multURL;
+                    answer = x*y;
+                }
+                if (page == "div"){
+                    URL = divURL;
+                    answer = x/y;
+                }
+                if (page == "sqrt"){
+                    URL = sqrtURL;
+                    answer = Math.sqrt(x);
+                }
+                if (page == "caret"){
+                    URL = caretURL;
+                    answer = Math.pow(x,y);
+                }
+                if (page == "mod"){
+                    URL = modURL;
+                    answer = x%y;
+                }
+
+                let xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var j = JSON.parse(this.response);
+                    if (j.answer == answer){
+                        document.write(page + "status:" +'<a href="' + URL + '">ONLINE</a>' + "<br>"); 
+                    }
+                    else {
+                        document.write(page + "status:" +'<a href="' + URL + '">ONLINE</a>' + "- Failed to get correct result" +"<br>"); 
+                    }
+                }
+            };
+            xhttp.addEventListener("error", function reqListener () {
+            value = "ERROR - Couldn't connect";
+            document.write(page + " status: " + value + "<br>");
+            });
+            xhttp.open("GET",URL+"?x="+x+"&y="+y);
+            xhttp.send();
+            }
+
+            function checkFrontEnd(){
+                let xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var j = JSON.parse(this.response);
+                    document.write("Front End status: " +'<a href="' + URL + '">ONLINE</a>' + "<br>"); 
+                }
+            };
+            xhttp.addEventListener("error", function reqListener () {
+            value = "ERROR - Couldn't connect";
+            document.write("Front end status: " + value + "<br>");
+            });
+            xhttp.open("GET",frontendURL);
+            xhttp.send();
+            }
+
+
+        </script>
+    </head>
+</html>

@@ -1,0 +1,15 @@
+image: ubuntu:18.04
+
+stages:
+  - test
+
+test:
+  stage: test
+  script: 
+      - export PYTHONPATH=.
+      - export FLASK_APP=web
+      - apt-get update -qy
+      - apt-get install -y python3-pip python3
+      - pip3 install Flask gunicorn pytest pytest-cov
+      - cd src
+      - python3 -m unittest multTest

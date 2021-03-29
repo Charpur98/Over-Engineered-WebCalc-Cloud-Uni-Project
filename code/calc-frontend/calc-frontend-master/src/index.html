@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebCalc</title>
+
+<script type="text/javascript">
+
+let value = 0;
+let ans = 0;
+let x = 0;
+let y = 0;
+let operation = '';
+let fetching = false;
+
+let proxyURL = "http://calc-proxy.40174730.qpc.hal.davecutting.uk/";
+let valueStorage = "http://currentvalue.40174730.qpc.hal.davecutting.uk/";
+
+function Display()
+{
+    fetching = false;
+    document.getElementById('display').value = value;
+}
+
+function Clear()
+{
+    value = 0;
+    x = 0;
+    y = 0;
+    operation = '';
+    Display();
+}
+
+function NumClick(n)
+{
+    if (fetching == true)
+        return;
+
+    if (value == 0)
+        value = n;
+    else
+    {
+        value *= 10;
+        value += n;
+    }
+
+    Display();
+}
+
+function Ans()
+{
+    getCurrentValue();
+
+    if (value == 0)
+        value = ans;
+    else
+    {
+        value *= 10;
+        value += ans;
+    }
+
+    Display();
+}
+
+function getCurrentValue(){
+    try{
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var j = JSON.parse(this.responseText);
+                ans = j.answer;
+            }
+        };
+        xhttp.addEventListener("error", function reqListener () {
+            value = "ERROR: Getting prev answer";
+        });
+        if (ans == 0 || ans == null){
+            xhttp.open("GET",valueStorage, false);
+        }else{
+            xhttp.open("GET",valueStorage+"?ans=" + ans, false);
+        }
+        xhttp.send();
+    } catch{
+        console.log("Couldnt connect to " + valueStorage);
+    }
+}
+
+function Plus()
+{
+    // if we have an outstanding operation resolve it
+    if (operation != '')
+        Equals();
+
+    x = value;
+    value = 0;
+    operation = 'add';
+
+    Display();
+}
+
+function Minus()
+{
+    // if we have an outstanding operation resolve it
+    if (operation != '')
+        Equals();
+
+    x = value;
+    value = 0;
+    operation = 'sub';
+
+    Display();
+}
+
+function Mult()
+{
+    // if we have an outstanding operation resolve it
+    if (operation != '')
+        Equals();
+
+    x = value;
+    value = 0;
+    operation = 'mult';
+
+    Display();
+}
+
+function Divide()
+{
+    // if we have an outstanding operation resolve it
+    if (operation != '')
+        Equals();
+
+    x = value;
+    value = 0;
+    operation = 'div';
+
+    Display();
+}
+
+function Sqrt()
+{
+    // if we have an outstanding operation resolve it
+    if (operation != '')
+        Equals();
+
+    x = value;
+    operation = 'sqrt';
+
+    Display();
+}
+
+function Caret()
+{
+    // if we have an outstanding operation resolve it
+    if (operation != '')
+        Equals();
+
+    x = value;
+    value = 0;
+    operation = 'caret';
+
+    Display();
+}
+
+function Modu()
+{
+    // if we have an outstanding operation resolve it
+    if (operation != '')
+        Equals();
+
+    x = value;
+    value = 0;
+    operation = 'mod';
+
+    Display();
+}
+
+function Equals()
+{
+    if (operation == ''){
+        value = "ERROR: No operator";
+        Display();
+        return;
+    }
+
+    if (fetching == true)
+        return;
+
+    y = value;
+    fetching = true;
+
+    let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var j = JSON.parse(this.response);
+                console.log("Response: " + this.response);
+                x=0;
+                y=0;
+                operation='';
+                value = j.answer;
+                ans = value;
+                getCurrentValue();
+                Display();
+                ErrorCheck(j.error);
+            }
+            else if (this.status == 400 || this.status == 404){
+                var j = JSON.parse(this.response);
+                  value = j.error;
+                  Display();
+            }
+        };
+        xhttp.addEventListener("error", function reqListener () {
+            value = "ERROR";
+            Display();
+        });
+
+        xhttp.open("GET",proxyURL+"?x="+x+"&y="+y + "&op=" +operation);
+        console.log("Request sent to: " + proxyURL+"?x="+x+"&y="+y + "&op=" +operation);
+        xhttp.send();
+
+        return;
+}
+
+function ErrorCheck(error, answer){
+    if (error == true){
+        value = "ERROR";
+    }
+}
+
+</script>
+
+<style type="text/css">
+body  {
+    font-size: 150%;
+    font-family: monospace;
+}
+
+#logo
+{
+    font-family: Calibri, sans-serif;
+    font-weight: lighter;
+    color: #505050;
+    margin: 0.5em;
+}
+
+#calculator
+{
+    text-align: center;
+    margin-top: 1em;
+}
+
+#display {
+    font-size: 100%;
+    padding: 0.2em;
+    margin: 0.2em;
+    font-family: monospace;
+    letter-spacing: 0.1em;
+}
+
+.calc1 {
+    border: solid #d0d0d0 1px;
+    background-color: #f0f0f0;
+    padding: 1.5em;
+    margin: 1em;
+}
+.calc2 {
+    border: solid #d0d0d0 1px;
+    background-color: #f0f0f0;
+    padding-top: 1.5em;
+    padding-right: 1.0em;
+    padding-bottom: 1.5em;
+    padding-left: 1.0em;
+    margin: 1em;
+}
+</style>
+
+</head>
+<body>
+<div id="calculator">
+    <div id="logo">
+        Over-engineered WebCalc
+    </div>
+    <div>
+        <input type="text" id="display" readonly="1" value="">
+    </div>
+    <div>
+        <button class="calc1" onclick="Clear();">C</button>
+        <button class="calc2" onclick="Ans()">Ans</button>
+        <button class="calc1" onclick="Modu()">%</button>
+        <button class="calc1" onclick="Caret()">^</button>
+    </div>
+    <div>
+        <button class="calc1" onclick="NumClick(7);">7</button>
+        <button class="calc1" onclick="NumClick(8);">8</button>
+        <button class="calc1" onclick="NumClick(9);">9</button>
+        <button class="calc1" onclick="Plus();">+</button>
+    </div>
+    <div>
+        <button class="calc1" onclick="NumClick(4);">4</button>
+        <button class="calc1" onclick="NumClick(5);">5</button>
+        <button class="calc1" onclick="NumClick(6);">6</button>
+        <button class="calc1" onclick="Minus();">-</button>
+    </div>
+    <div>
+        <button class="calc1" onclick="NumClick(1);">1</button>
+        <button class="calc1" onclick="NumClick(2);">2</button>
+        <button class="calc1" onclick="NumClick(3);">3</button>
+        <button class="calc2" onclick="Sqrt()">Sqrt</button>
+
+    </div>
+    <div>
+        <button class="calc1" onclick="NumClick(0);">0</button>
+        <button class="calc1" onclick="Mult();">*</button>
+        <button class="calc1" onclick="Divide()">/</button>
+        <button class="calc1" onclick="Equals();">=</button>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    value = 00;
+    Display();
+</script>
+
+</html>

@@ -1,0 +1,15 @@
+{  
+    "addURL": "http://calc-add.40174730.qpc.hal.davecutting.uk/",
+    "minusURL": "http://calc-subtract.40174730.qpc.hal.davecutting.uk/",
+    "multURL": "http://py-mult.40174730.qpc.hal.davecutting.uk/",
+    "divURL": "http://go-div.40174730.qpc.hal.davecutting.uk/",
+    "sqrtURL": "http://java-sqrt.40174730.qpc.hal.davecutting.uk/",
+    "caretURL": "http://c-caret.40174730.qpc.hal.davecutting.uk/",
+    "modURL": "https://yb5syo1b3i.execute-api.us-east-1.amazonaws.com/default/modu",
+    "addURL2": "http://2-calc-add.40174730.qpc.hal.davecutting.uk/",
+    "minusURL2": "http://2-calc-subtract.40174730.qpc.hal.davecutting.uk/",
+    "multURL2": "http://2-py-mult.40174730.qpc.hal.davecutting.uk/",
+    "divURL2": "http://2-go-div.40174730.qpc.hal.davecutting.uk/",
+    "sqrtURL2": "http://2-java-sqrt.40174730.qpc.hal.davecutting.uk/",
+    "caretURL2": "http://2-c-caret.40174730.qpc.hal.davecutting.uk/"
+}

@@ -1,0 +1,12 @@
+image: golang:1.10
+
+stages:
+  - test
+
+test:
+  stage: test
+  script: 
+  - go get -u github.com/golang/dep/cmd/dep
+  - go get -u github.com/bitly/go-simplejson
+  - cd main
+  - go test -v
